@@ -1,4 +1,4 @@
-abstract: Validate and process Icelandic identity numbers
+abstract: Validate and process Icelandic personal identification numebers
 author: "\xC3\x86var Arnfj\xC3\xB6r\xC3\xB0 Bjarmason <avar@cpan.org>"
 distribution_type: module
 generated_by: Module::Install version 0.64
@@ -10,4 +10,4 @@ no_index:
     - t
 requires: 
   List::Util: 0
-version: 0.01
+version: 0.02

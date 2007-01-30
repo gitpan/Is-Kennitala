@@ -3,23 +3,23 @@ use strict;
 
 use base qw< Exporter >;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use List::Util qw< sum >;
 
-our (%EXPORT_TAGS, @EXPORT_OK);
-
-%EXPORT_TAGS = (
+our %EXPORT_TAGS = (
 	all => [ @EXPORT_OK = qw<
-                                valid checksum
-                                person company
-                                year month day
+        valid checksum
+        person company
+        year month day
     > ],
 );
 
+our @EXPORT_OK = @{ $EXPORT_TAGS{ all } };
+
 =head1 NAME
 
-Is::Kennitala - Validate and process Icelandic identity numbers
+Is::Kennitala - Validate and process Icelandic personal identification numebers
 
 =head1 SYNOPSIS
 
@@ -45,29 +45,45 @@ Is::Kennitala - Validate and process Icelandic identity numbers
     if ( $kt->valid and $kt->person ) {
         printf "You are a Real Boy(TM) born on %d-%d-%d\n",
             $kt->year, $kt->month, $kt->day;
-    } elsif ( $kt->valid and $kt->comany ) {
-        warn "Begone, you spawn of capitalims!";
+    } elsif ( $kt->valid and $kt->company ) {
+        warn "Begone, you spawn of capitalism!";
     } else {
         die "EEEK!";
     }
 
 =head1 DESCRIPTION
 
-A I<kennitala> (Icelandic: I<identity number>) is a 10 digit unique
-identity number given to persons and corporations in Iceland. This
-module provides an interface for validating these numbers and
-extracting information from them.
+This module provides an interface for validating the syntax of and
+extracting information from Icelandic personal identification numbers
+(Icelandic: I<kennitala>). These are unique 10-digit numbers assigned
+to all Icelandic citizens, foreign citizens with permanent residence
+and corporations (albeit with a slightly different format, L<see
+below|/Format>).
+
+=head1 LIMITATIONS
+
+The National Statistical Institute of Iceland (Icelandic: I<Hagstofa>)
+- a goverment organization - handles the assignment of these
+numbers. This module will tell you whether the formatting of a given
+number is valid, not whether it was actually assigned to someone. For
+that you need to pay through the nose to the NSIoI, or cleverly leech
+on someone who is:)
 
 =cut
 
 use overload '""' => sub { ${ +shift } };
 
+=head1 EXPORT
+
+None by default, every function in this package except for L</new> can
+be exported individually, B<:all> exports them all.
+
 =head1 METHODS & FUNCTIONS
 
 =head2 new
 
-Optional constructor which takes a valid kennitala or a fragment as
-its argument. Returns an object that L<stringifies|overload> to
+Optional constructor which takes a valid kennitala or a fragment of
+one as its argument. Returns an object that L<stringifies|overload> to
 whatever string is provided.
 
 If a fragment is provided functions in this package that need
@@ -199,6 +215,35 @@ sub day
 
     substr $kt, 0, 2;
 }
+
+=head1 Format
+
+The format of an IPIN is relatively simple:
+
+   DDMMYY-SSDC
+
+Where B<DDMMYY> is a two-digit day, month and year, B<SS> is a
+pseudo-random serial number, B<D> is the check digit computed from
+preceding part and B<C> stands for the century and is not included
+when calculating the checksum digit - 8 for 1800s, and 9 and 0 for the
+1900s and 2000s respectively. It is customary to place a dash between
+the first 6 and last 4 digits when formatting the number.
+
+To compute the check digit from a given IPIN B<0902862349> the
+following algorithm is used:
+
+      0   9    0   2    8    6    2   3  4  9
+    * 3   2    7   6    5    4    3   2
+    = 0 + 18 + 0 + 12 + 40 + 24 + 6 + 6 = 106
+
+    checkdigit = (11 - 106 % 11) % 11
+
+I.e. each digit B<1..8> is multiplied by B<3..2>, B<7..2> respectively
+and the result of each multiplication added together to get
+B<106>. B<106> is then used as the divend in a modulo operation with
+11 as the divisor to get B<7> which is then subtracted from B<11> to
+get B<4> - in this case the check digit, if the result had been 11 a
+second modulo operation 11 % 11 would have left us with B<0>.
 
 =head1 CAVEATS
 
