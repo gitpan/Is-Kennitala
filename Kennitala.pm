@@ -3,15 +3,15 @@ use strict;
 
 use base qw< Exporter >;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use List::Util qw< sum >;
 
 our %EXPORT_TAGS = (
-	all => [ @EXPORT_OK = qw<
-        valid checksum
-        person company
-        year month day
+    all => [ qw<
+       valid checksum
+       person company
+       year month day
     > ],
 );
 
@@ -19,7 +19,7 @@ our @EXPORT_OK = @{ $EXPORT_TAGS{ all } };
 
 =head1 NAME
 
-Is::Kennitala - Validate and process Icelandic personal identification numebers
+Is::Kennitala - Validate and process Icelandic personal identification numbers
 
 =head1 SYNOPSIS
 
@@ -127,24 +127,24 @@ checksum digit.
 sub checksum
 {
     my $kt = ref $_[0] ? ${$_[0]} : $_[0];
-	my @num = unpack q<(A)*>, $kt;
+    my @num = unpack q<(A)*>, $kt;
 
-	my $sum =
-		sum
-			# Day
-			3 * $num[0],
-			2 * $num[1],
-			# Month
-			7 * $num[2],
-			6 * $num[3],
-			# Year
-			5 * $num[4],
-			4 * $num[5],
-			# Serial
-			3 * $num[6],
-			2 * $num[7];
+    my $sum =
+        sum
+            # Day
+            3 * $num[0],
+            2 * $num[1],
+            # Month
+            7 * $num[2],
+            6 * $num[3],
+            # Year
+            5 * $num[4],
+            4 * $num[5],
+            # Serial
+            3 * $num[6],
+            2 * $num[7];
 
-	(11 - $sum % 11) % 11;
+    (11 - $sum % 11) % 11;
 }
 
 =head2 person

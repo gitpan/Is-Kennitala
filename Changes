@@ -1,5 +1,10 @@
 Revision history for Perl extension Is::Kennitala
 
+0.03 Thu Feb 1 2007
+        - Tyop in first POD section
+
+        - Compiles again!
+
 0.02 Tue Jan 30 2007
         - Fixed typos in initial release (I did not, for one, invent a time machine)
 
